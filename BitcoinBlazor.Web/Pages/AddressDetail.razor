@@ -37,6 +37,9 @@
     [Parameter]
     public RenderFragment CustomHeader { get; set; }
 
+    [CascadingParameter]
+    private Task<AuthenticationState> authStateTask { get; set; }
+
     private async Task CloseTaskModal()
     {
         await jsRuntime.InvokeAsync<object>("CloseModal", "addressModal");
@@ -54,8 +57,11 @@
             var segwitMainNetAddress = service.GetSegwitBitcoinMainNetAddress(publicKey);
             var segwitP2SHTestNetAddress = service.GetSegwitP2SHBitcoinTestNetAddress(publicKey);
             var segwitP2SHMainNetAddress = service.GetSegwitP2SHBitcoinMainNetAddress(publicKey);
+            
+            var authState = await authStateTask;
+            var user = authState.User;
 
-
+            AddressObject.UserName = user.Identity.Name;
             AddressObject.BitcoinPublicKey = publicKey.ToString();
             AddressObject.LegacyBitcoinTestNetAddress = legacyTestNetAddress.ToString();
             AddressObject.LegacyBitcoinMainNetAddress = legacyMainNetAddress.ToString();

@@ -15,6 +15,7 @@ using BitcoinBlazor.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
+using BitcoinBlazor.Data.DataModels;
 
 namespace BitcoinBlazor
 {
@@ -32,7 +33,7 @@ namespace BitcoinBlazor
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddDefaultIdentity<CustomApplicationUser>().AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();

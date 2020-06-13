@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using NBitcoin;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BitcoinBlazor.Services
@@ -16,6 +17,11 @@ namespace BitcoinBlazor.Services
         public BitcoinService(ApplicationDbContext context)
         {
             _context = context;
+        }
+
+        public async Task<List<UserBitcoinAddress>> GetAddresses(string userName)
+        {
+            return await _context.UserBitcoinAddresses.Where(user => user.UserName == userName).ToListAsync();
         }
 
         public async Task<UserBitcoinAddress> Add(UserBitcoinAddress bitcoinAddress) 
@@ -50,11 +56,6 @@ namespace BitcoinBlazor.Services
         {
             Key privateKey = new Key();
             return privateKey;
-        }
-
-        public async Task<List<UserBitcoinAddress>> GetAddresses()
-        {
-            return await _context.UserBitcoinAddresses.ToListAsync();
         }
 
         /// <summary>

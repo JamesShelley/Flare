@@ -4,78 +4,98 @@
 @inject IBitcoinService service
 @inject IJSRuntime jsRuntime
 
-<h1>
-    Bitcoin Address List -     <input type="button" data-toggle="modal" data-target="#addressModal" class="btn btn-primary" value="Add Address" />
-</h1>
+    <AuthorizeView>
+        <Authorized>
+            <h1>
+                Bitcoin Address List -     <input type="button" data-toggle="modal" data-target="#addressModal" class="btn btn-primary" value="Add Address" />
+            </h1>
 
-<p>
-    Below are all of your Bitcoin Network Addresses associated with your Bitcoin Public Key. You should have already backed up your Bitcoin Private key
-    and seed words as these are not stored for your privacy.
-</p>
+            <p>
+                Below are all of your Bitcoin Network Addresses associated with your Bitcoin Public Key. You should have already backed up your Bitcoin Private key
+                and seed words as these are not stored for your privacy.
+            </p>
 
-@if (BitcoinAddressList == null)
-{
-    <p><em>Loading...</em></p>
-}
-else if (BitcoinAddressList.Count == 0)
-{
-    <div class="alert alert-info" role="alert">
-        You currently do not have any Bitcoin Addresses.
-    </div>
-}
-else
-{
-
-    <div class="row">
-        @foreach (var address in BitcoinAddressList)
-        {
-            <div class="col-md-6">
-
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Address Nickname: @address.AddressNickname</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">[Value]</h6>
-                        <p class="card-text">
-                            <ul>
-                                <li>
-                                    Public Key: @address.BitcoinPublicKey
-                                </li>
-                                <li>
-                                    Legacy Bitcoin TestNet: @address.LegacyBitcoinTestNetAddress
-                                </li>
-                                <li>
-                                    Legacy Bitcoin MainNet: @address.LegacyBitcoinMainNetAddress
-                                </li>
-                                <li>
-                                    SegWit Bitcoin TestNet: @address.SegWitBitcoinTestNetAddress
-                                </li>
-                                <li>
-                                    SegWit Bitcoin MainNet: @address.SegWitBitcoinMainNetAddress
-                                </li>
-                                <li>
-                                    SegWitP2SH Bitcoin TestNet: @address.SegWitP2SHBitcoinTestNetAddress
-                                </li>
-                                <li>
-                                    SegWitP2SH Bitcoin MainNet:@address.SegWitP2SHBitcoinMainNetAddress
-                                </li>
-                            </ul>
-
-                        </p>
-                        <a href="#" class="btn btn-success" data-toggle="modal" data-target="#addressModal" @onclick="(() => PrepareForEdit(address))">Edit</a>
-                        <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal" @onclick="(() => PrepareForDelete(address))">Delete</a>
-                    </div>
+            @if (BitcoinAddressList == null)
+            {
+                <p><em>Loading...</em></p>
+            }
+            else if (BitcoinAddressList.Count == 0)
+            {
+                <div class="alert alert-info" role="alert">
+                    You currently do not have any Bitcoin Addresses.
                 </div>
+            }
+            else
+            {
+
+                <div class="row">
+                    @foreach (var address in BitcoinAddressList)
+                    {
+                        <div class="col-md-6">
+
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Address Nickname: @address.AddressNickname</h5>
+                                    <h6 class="card-subtitle mb-2 text-muted">[Value]</h6>
+                                    <p class="card-text">
+                                        <ul>
+                                            <li>
+                                                Public Key: @address.BitcoinPublicKey
+                                            </li>
+                                            <li>
+                                                Legacy Bitcoin TestNet: @address.LegacyBitcoinTestNetAddress
+                                            </li>
+                                            <li>
+                                                Legacy Bitcoin MainNet: @address.LegacyBitcoinMainNetAddress
+                                            </li>
+                                            <li>
+                                                SegWit Bitcoin TestNet: @address.SegWitBitcoinTestNetAddress
+                                            </li>
+                                            <li>
+                                                SegWit Bitcoin MainNet: @address.SegWitBitcoinMainNetAddress
+                                            </li>
+                                            <li>
+                                                SegWitP2SH Bitcoin TestNet: @address.SegWitP2SHBitcoinTestNetAddress
+                                            </li>
+                                            <li>
+                                                SegWitP2SH Bitcoin MainNet:@address.SegWitP2SHBitcoinMainNetAddress
+                                            </li>
+                                        </ul>
+
+                                    </p>
+                                    <a href="#" class="btn btn-success" data-toggle="modal" data-target="#addressModal" @onclick="(() => PrepareForEdit(address))">Edit</a>
+                                    <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal" @onclick="(() => PrepareForDelete(address))">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+
+            }
+
+            <ConfirmDialog OnClick="@Delete" />
+            <AddressDetail AddressObject=addressObject DataChanged="@DataChanged">
+                <CustomHeader>@customHeader</CustomHeader>
+            </AddressDetail>
+        </Authorized>
+
+        <NotAuthorized>
+            <div class="jumbotron">
+                <h1 class="display-4">Welcome to Flare </h1>
+                <p class="lead">Flare is an online Bitcoin Wallet built with privacy in mind.</p>
+                <hr class="my-4">
+                <ul>
+                    <li>No KYC - just register with any username you desire and thats it. We don't need to know your email, where you live or your Identity.</li>
+                    <li>We don't store private keys, this is your responsibility</li>
+                </ul>
+                <a class="btn btn-primary btn-lg" href="/Identity/Account/Register" role="button">Register</a>
+                <a class="btn btn-primary btn-lg" href="/Identity/Account/Login" role="button">Login</a>
             </div>
-        }
-    </div>
+        </NotAuthorized>
 
+    </AuthorizeView>
 
-}
-
-<ConfirmDialog OnClick="@Delete" />
-<AddressDetail AddressObject=addressObject DataChanged="@DataChanged">
-    <CustomHeader>@customHeader</CustomHeader>
-</AddressDetail>
 
 
 @code {
@@ -84,9 +104,15 @@ else
     BitcoinBlazor.Data.DataModels.UserBitcoinAddress addressObject = new Data.DataModels.UserBitcoinAddress();
     string customHeader = string.Empty;
 
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authStateTask { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
-        BitcoinAddressList = await service.GetAddresses();
+        var authState = await authStateTask;
+        var user = authState.User.Identity.Name;
+        BitcoinAddressList = await service.GetAddresses(user);
     }
 
     private void InitializeTaskObject()
@@ -97,7 +123,9 @@ else
 
     private async void DataChanged()
     {
-        BitcoinAddressList = await service.GetAddresses();
+        var authState = await authStateTask;
+        var user = authState.User.Identity.Name;
+        BitcoinAddressList = await service.GetAddresses(user);
         StateHasChanged();
     }
 
@@ -114,9 +142,11 @@ else
 
     private async Task Delete()
     {
+        var authState = await authStateTask;
+        var user = authState.User.Identity.Name;
         var address = await service.Delete(addressObject.Id);
         await jsRuntime.InvokeAsync<object>("CloseModal", "confirmDeleteModal");
-        BitcoinAddressList = await service.GetAddresses();
+        BitcoinAddressList = await service.GetAddresses(user);
         addressObject = new Data.DataModels.UserBitcoinAddress();
     }
 }

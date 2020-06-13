@@ -22,7 +22,7 @@ namespace BitcoinBlazor.Services
         Key GeneratePrivateKey();
         
         //List Bitcoin Addresses
-        Task<List<UserBitcoinAddress>> GetAddresses();
+        Task<List<UserBitcoinAddress>> GetAddresses(string userName);
 
         //Generates Public Key from private key
         PubKey GeneratePublicKey(Key privateKey);
