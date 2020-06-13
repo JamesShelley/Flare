@@ -5,6 +5,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20200613154803_entityframework identity migrations.cs" />
+    <Compile Remove="Migrations\20200613154803_entityframework identity migrations.Designer.cs" />
+    <Compile Remove="Migrations\20200613161523_Create custom ApplicationUser.cs" />
+    <Compile Remove="Migrations\20200613161523_Create custom ApplicationUser.Designer.cs" />
+    <Compile Remove="Migrations\20200613161855_revert.cs" />
+    <Compile Remove="Migrations\20200613161855_revert.Designer.cs" />
+    <Compile Remove="Migrations\20200613162130_test.cs" />
+    <Compile Remove="Migrations\20200613162130_test.Designer.cs" />
+    <Compile Remove="Migrations\20200613164059_Add user to bitcoin addresses.cs" />
+    <Compile Remove="Migrations\20200613164059_Add user to bitcoin addresses.Designer.cs" />
+    <Compile Remove="Migrations\20200613164252_user change.cs" />
+    <Compile Remove="Migrations\20200613164252_user change.Designer.cs" />
+    <Compile Remove="Migrations\20200613165430_add user.cs" />
+    <Compile Remove="Migrations\20200613165430_add user.Designer.cs" />
+    <Compile Remove="Migrations\20200613170202_test.cs" />
+    <Compile Remove="Migrations\20200613170202_test.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.5" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.5" />

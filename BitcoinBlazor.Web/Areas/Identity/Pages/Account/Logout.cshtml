@@ -1,7 +1,8 @@
 ﻿@page
 @attribute [IgnoreAntiforgeryToken]
 @using Microsoft.AspNetCore.Identity
-@inject SignInManager<IdentityUser> SignInManager
+@using BitcoinBlazor.Data.DataModels 
+@inject SignInManager<CustomApplicationUser> SignInManager
 
 
 @functions
