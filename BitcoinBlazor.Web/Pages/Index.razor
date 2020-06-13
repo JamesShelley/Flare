@@ -1,0 +1,94 @@
+﻿@page "/"
+@using BitcoinBlazor.Services
+@using BitcoinBlazor.Data
+@inject IBitcoinService service
+
+<h1>
+    Bitcoin Address List -     <input type="button" data-toggle="modal" data-target="#addressModal" class="btn btn-primary" value="Add Address" />
+</h1>
+
+<p>
+    Below are all of your Bitcoin Network Addresses associated with your Bitcoin Public Key. You should have already backed up your Bitcoin Private key
+    and seed words as these are not stored for your privacy.
+</p>
+
+@if (BitcoinAddressList == null)
+{
+    <p><em>Loading...</em></p>
+} else if(BitcoinAddressList.Count == 0)
+{
+    <p>You currently do not have any Bitcoin Addresses.</p>
+}
+else
+{
+
+    <div class="row">
+        @foreach (var address in BitcoinAddressList)
+        {
+            <div class="col-md-6">
+
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Address Nickname: @address.AddressNickname</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">[Value]</h6>
+                        <p class="card-text">
+                            <ul>
+                                <li>
+                                    Public Key: @address.BitcoinPublicKey
+                                </li>
+                                <li>
+                                    Legacy Bitcoin TestNet: @address.LegacyBitcoinTestNetAddress
+                                </li>
+                                <li>
+                                    Legacy Bitcoin MainNet: @address.LegacyBitcoinMainNetAddress
+                                </li>
+                                <li>
+                                    SegWit Bitcoin TestNet: @address.SegWitBitcoinTestNetAddress
+                                </li>
+                                <li>
+                                    SegWit Bitcoin MainNet: @address.SegWitBitcoinMainNetAddress
+                                </li>
+                                <li>
+                                    SegWitP2SH Bitcoin TestNet: @address.SegWitP2SHBitcoinTestNetAddress
+                                </li>
+                                <li>
+                                    SegWitP2SH Bitcoin MainNet:@address.SegWitP2SHBitcoinMainNetAddress
+                                </li>
+                            </ul>
+
+                        </p>
+                        <a href="#" class="card-link">Edit</a>
+                        <a href="#" class="card-link">Delete</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+
+}
+
+<AddressDetail AddressObject=addressObject DataChanged="@DataChanged"></AddressDetail>
+
+
+@code {
+    List<BitcoinBlazor.Data.DataModels.UserBitcoinAddress> BitcoinAddressList;
+
+    BitcoinBlazor.Data.DataModels.UserBitcoinAddress addressObject = new Data.DataModels.UserBitcoinAddress();
+
+    protected override async Task OnInitializedAsync()
+    {
+        BitcoinAddressList = await service.GetAddresses();
+    }
+
+    private void InitializeTaskObject()
+    {
+        addressObject = new BitcoinBlazor.Data.DataModels.UserBitcoinAddress();
+    }
+
+    private async void DataChanged()
+    {
+        BitcoinAddressList = await service.GetAddresses();
+        StateHasChanged();
+    }
+}

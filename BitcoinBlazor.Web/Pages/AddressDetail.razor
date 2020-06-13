@@ -1,0 +1,66 @@
+﻿@using BitcoinBlazor.Services
+@using BitcoinBlazor.Data
+@inject IBitcoinService service
+@inject IJSRuntime jsRuntime
+
+<div class="modal" tabindex="-1" role="dialog" id="addressModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Bitcoin Address</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <EditForm Model="@AddressObject" OnValidSubmit="@HandleValidSubmit">
+                    <div class="form-group">
+                        <label for="addressNickname">Address Nickname</label>
+                        <input type="hidden" @bind-value="@AddressObject.Id" />
+                        <InputText id="name" class="form-control" @bind-Value="@AddressObject.AddressNickname" />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public BitcoinBlazor.Data.DataModels.UserBitcoinAddress AddressObject { get; set; }
+
+    [Parameter]
+    public Action DataChanged { get; set; }
+
+    private async Task CloseTaskModal()
+    {
+        await jsRuntime.InvokeAsync<object>("CloseModal", "addressModal");
+    }
+
+    private async void HandleValidSubmit()
+    {
+        var privateKey = service.GeneratePrivateKey();
+        var publicKey = service.GeneratePublicKey(privateKey);
+        var legacyTestNetAddress = service.GetLegacyBitcoinTestNetAddress(publicKey);
+        var legacyMainNetAddress = service.GetLegacyBitcoinMainNetAddress(publicKey);
+        var segwitTestNetAddress = service.GetSegwitBitcoinTestNetAddress(publicKey);
+        var segwitMainNetAddress = service.GetSegwitBitcoinMainNetAddress(publicKey);
+        var segwitP2SHTestNetAddress = service.GetSegwitP2SHBitcoinTestNetAddress(publicKey);
+        var segwitP2SHMainNetAddress = service.GetSegwitP2SHBitcoinMainNetAddress(publicKey);
+
+
+        AddressObject.BitcoinPublicKey = publicKey.ToString();
+        AddressObject.LegacyBitcoinTestNetAddress = legacyTestNetAddress.ToString();
+        AddressObject.LegacyBitcoinMainNetAddress = legacyMainNetAddress.ToString();
+        AddressObject.SegWitBitcoinTestNetAddress = segwitTestNetAddress.ToString();
+        AddressObject.SegWitBitcoinMainNetAddress = segwitMainNetAddress.ToString();
+        AddressObject.SegWitP2SHBitcoinTestNetAddress = segwitP2SHTestNetAddress.ToString();
+        AddressObject.SegWitP2SHBitcoinMainNetAddress = segwitP2SHMainNetAddress.ToString();
+        await service.Add(AddressObject);
+        await CloseTaskModal();
+        DataChanged?.Invoke();
+
+    }
+}
