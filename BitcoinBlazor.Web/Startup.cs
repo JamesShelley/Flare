@@ -12,6 +12,9 @@ using Microsoft.Extensions.Hosting;
 using BitcoinBlazor.Data;
 using Microsoft.EntityFrameworkCore;
 using BitcoinBlazor.Services;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server;
 
 namespace BitcoinBlazor
 {
@@ -28,11 +31,12 @@ namespace BitcoinBlazor
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
             services.AddTransient<IBitcoinService, BitcoinService>();
-
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddServerSideBlazor().AddCircuitOptions(o => o.DetailedErrors = true);
         }
 
@@ -54,9 +58,11 @@ namespace BitcoinBlazor
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllers();
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
