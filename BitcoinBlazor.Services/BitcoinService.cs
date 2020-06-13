@@ -25,6 +25,21 @@ namespace BitcoinBlazor.Services
             return bitcoinAddress;
         }
 
+        public async Task<UserBitcoinAddress> Update(UserBitcoinAddress bitcoinAddress)
+        {
+            _context.Entry(bitcoinAddress).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return bitcoinAddress;
+        }
+
+        public async Task<UserBitcoinAddress> Delete(int id)
+        {
+            var address = await _context.UserBitcoinAddresses.FindAsync(id);
+            _context.UserBitcoinAddresses.Remove(address);
+            await _context.SaveChangesAsync();
+            return address;
+        }
+
         /// <summary>
         ///     Generates a Bitcoin Private Key
         /// </summary>

@@ -11,9 +11,16 @@ namespace BitcoinBlazor.Services
     {
         //Add a bitcoin address to database
         Task<UserBitcoinAddress> Add(UserBitcoinAddress bitcoinAddress);
+
+        //Edit a bitcoin address nickname
+        Task<UserBitcoinAddress> Update(UserBitcoinAddress bitcoinAddress);
+
+        //Delete a bitcoin address
+        Task<UserBitcoinAddress> Delete(int id);
+
         //Generates a Bitcoin Private Key
         Key GeneratePrivateKey();
-
+        
         //List Bitcoin Addresses
         Task<List<UserBitcoinAddress>> GetAddresses();
 

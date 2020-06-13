@@ -2,6 +2,7 @@
 @using BitcoinBlazor.Services
 @using BitcoinBlazor.Data
 @inject IBitcoinService service
+@inject IJSRuntime jsRuntime
 
 <h1>
     Bitcoin Address List -     <input type="button" data-toggle="modal" data-target="#addressModal" class="btn btn-primary" value="Add Address" />
@@ -15,9 +16,12 @@
 @if (BitcoinAddressList == null)
 {
     <p><em>Loading...</em></p>
-} else if(BitcoinAddressList.Count == 0)
+}
+else if (BitcoinAddressList.Count == 0)
 {
-    <p>You currently do not have any Bitcoin Addresses.</p>
+    <div class="alert alert-info" role="alert">
+        You currently do not have any Bitcoin Addresses.
+    </div>
 }
 else
 {
@@ -57,8 +61,8 @@ else
                             </ul>
 
                         </p>
-                        <a href="#" class="card-link">Edit</a>
-                        <a href="#" class="card-link">Delete</a>
+                        <a href="#" class="btn btn-success" data-toggle="modal" data-target="#addressModal" @onclick="(() => PrepareForEdit(address))">Edit</a>
+                        <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal" @onclick="(() => PrepareForDelete(address))">Delete</a>
                     </div>
                 </div>
             </div>
@@ -68,13 +72,17 @@ else
 
 }
 
-<AddressDetail AddressObject=addressObject DataChanged="@DataChanged"></AddressDetail>
+<ConfirmDialog OnClick="@Delete" />
+<AddressDetail AddressObject=addressObject DataChanged="@DataChanged">
+    <CustomHeader>@customHeader</CustomHeader>
+</AddressDetail>
 
 
 @code {
     List<BitcoinBlazor.Data.DataModels.UserBitcoinAddress> BitcoinAddressList;
 
     BitcoinBlazor.Data.DataModels.UserBitcoinAddress addressObject = new Data.DataModels.UserBitcoinAddress();
+    string customHeader = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -84,11 +92,31 @@ else
     private void InitializeTaskObject()
     {
         addressObject = new BitcoinBlazor.Data.DataModels.UserBitcoinAddress();
+        customHeader = "Add Bitcoin Address";
     }
 
     private async void DataChanged()
     {
         BitcoinAddressList = await service.GetAddresses();
         StateHasChanged();
+    }
+
+    private void PrepareForEdit(BitcoinBlazor.Data.DataModels.UserBitcoinAddress address)
+    {
+        customHeader = "Edit Bitcoin Address";
+        addressObject = address;
+    }
+
+    private void PrepareForDelete(BitcoinBlazor.Data.DataModels.UserBitcoinAddress address)
+    {
+        addressObject = address;
+    }
+
+    private async Task Delete()
+    {
+        var address = await service.Delete(addressObject.Id);
+        await jsRuntime.InvokeAsync<object>("CloseModal", "confirmDeleteModal");
+        BitcoinAddressList = await service.GetAddresses();
+        addressObject = new Data.DataModels.UserBitcoinAddress();
     }
 }
